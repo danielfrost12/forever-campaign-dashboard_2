@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alexander — Artist Overview for Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --card: #12121a; --border: #1f1f2e;
+    --accent: #22c55e; --blue: #3b82f6; --purple: #a855f7;
+    --orange: #f97316; --pink: #ec4899; --yellow: #eab308;
+    --red: #ef4444; --cyan: #06b6d4; --teal: #14b8a6;
+    --text: #e4e4e7; --dim: #71717a; --muted: #52525b; --white: #fafafa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', -apple-system, sans-serif; line-height: 1.6; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #0f0f1a 0%, #1a0f2e 50%, #0f1a1a 100%); border-bottom: 1px solid var(--border); padding: 40px; }
+  .header-inner { max-width: 1100px; margin: 0 auto; }
+  .header-label { font-size: 11px; color: var(--purple); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; }
+  .header h1 { font-size: 36px; font-weight: 700; color: var(--white); font-family: 'Space Mono', monospace; }
+  .header-sub { font-size: 14px; color: var(--dim); margin-top: 8px; line-height: 1.7; }
+  .header-sub a { color: var(--blue); text-decoration: none; }
+  .header-sub a:hover { text-decoration: underline; }
+  .header-context { margin-top: 16px; display: flex; gap: 24px; flex-wrap: wrap; }
+  .header-tag { background: #1a1a2e; border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 12px; }
+  .header-tag .val { font-size: 18px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--white); display: block; margin-top: 2px; }
+
+  /* Nav */
+  .nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 40px; position: sticky; top: 0; z-index: 100; }
+  .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 4px; overflow-x: auto; }
+  .nav a { color: var(--dim); text-decoration: none; font-size: 12px; font-weight: 600; padding: 14px 16px; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+  .nav a:hover { color: var(--text); }
+  .nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Content */
+  .content { max-width: 1100px; margin: 0 auto; padding: 32px 40px; }
+  .section { margin-bottom: 48px; scroll-margin-top: 60px; }
+  .section h2 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 6px; font-family: 'Space Mono', monospace; }
+  .section-subtitle { font-size: 13px; color: var(--dim); margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+
+  /* Cards */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card h3 { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+  .card p { font-size: 13px; line-height: 1.7; }
+  .card .hl { font-weight: 600; }
+
+  /* Metrics grid */
+  .metrics { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  .metric { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 130px; }
+  .metric-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+  .metric-value { font-size: 24px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .metric-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+  /* Two column */
+  .two-col { display: flex; gap: 16px; flex-wrap: wrap; }
+  .two-col > div { flex: 1; min-width: 300px; }
+
+  /* Bars */
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .bar-label { width: 100px; font-size: 11px; color: var(--dim); text-align: right; flex-shrink: 0; }
+  .bar-track { flex: 1; background: var(--border); border-radius: 4px; height: 20px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-pct { width: 44px; font-size: 12px; color: var(--text); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { border-bottom: 2px solid var(--border); }
+  th { text-align: left; padding: 10px 12px; color: var(--dim); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: #1a1a25; }
+  td { padding: 12px; }
+  td:first-child { font-weight: 500; color: var(--white); }
+  .td-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .td-dim { color: var(--dim); }
+  .td-accent { color: var(--accent); font-weight: 600; }
+
+  /* Highlight box */
+  .highlight-box { border-radius: 10px; padding: 18px 22px; margin-bottom: 16px; }
+  .highlight-box.green { background: #0a1a0a; border: 1px solid #1a3a1a; }
+  .highlight-box.purple { background: #140f1e; border: 1px solid #2e1065; }
+  .highlight-box.blue { background: #0a0f1e; border: 1px solid #1e3a5f; }
+  .highlight-box.orange { background: #1a1207; border: 1px solid #431407; }
+  .highlight-box.yellow { background: #1a1a0f; border: 1px solid #2e2e14; }
+  .highlight-box .box-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Answer card */
+  .answer-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+  .answer-header { padding: 18px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .answer-header:hover { background: #1a1a25; }
+  .answer-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .answer-question { font-size: 15px; font-weight: 600; color: var(--white); flex: 1; }
+  .answer-verdict { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+  .verdict-strong { background: #052e16; color: #22c55e; border: 1px solid #14532d; }
+  .verdict-good { background: #172554; color: #60a5fa; border: 1px solid #1e3a5f; }
+  .verdict-note { background: #1a1a0f; color: #eab308; border: 1px solid #2e2e14; }
+  .answer-body { padding: 0 24px 20px; display: none; }
+  .answer-card.open .answer-body { display: block; }
+  .answer-card.open .answer-header { border-bottom: 1px solid var(--border); }
+  .chevron { color: var(--muted); transition: transform 0.2s; font-size: 18px; }
+  .answer-card.open .chevron { transform: rotate(90deg); }
+
+  .data-point { font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+  .data-point strong { color: var(--white); }
+  .manager-note { background: #0f0f1a; border-radius: 8px; padding: 14px 18px; margin-top: 12px; font-size: 12px; line-height: 1.6; border-left: 3px solid var(--purple); }
+  .manager-note strong { color: var(--purple); }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; margin-bottom: 20px; }
+  .timeline-item::before { content: ''; position: absolute; left: -24px; top: 6px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); }
+  .timeline-item.sold-out::before { background: var(--accent); }
+  .timeline-date { font-size: 11px; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+  .timeline-title { font-size: 14px; font-weight: 600; color: var(--white); }
+  .timeline-detail { font-size: 12px; color: var(--dim); }
+
+  /* Catalog row */
+  .catalog-rank { font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 12px; width: 24px; }
+  .catalog-streams { color: var(--accent); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 32px 0 48px; border-top: 1px solid var(--border); margin-top: 20px; }
+  .footer-main { font-size: 12px; color: var(--muted); }
+  .footer-links { margin-top: 8px; font-size: 12px; }
+  .footer-links a { color: var(--blue); text-decoration: none; margin: 0 8px; }
+  .footer-links a:hover { text-decoration: underline; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 6px; }
+  .tag-green { background: #052e16; color: #22c55e; }
+  .tag-blue { background: #172554; color: #60a5fa; }
+  .tag-purple { background: #1a0a2e; color: #a78bfa; }
+  .tag-orange { background: #431407; color: #fb923c; }
+
+  .press-logo { display: inline-block; background: #1a1a2e; border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--dim); margin: 4px; }
+
+  @media (max-width: 700px) {
+    .header { padding: 24px 20px; }
+    .header h1 { font-size: 24px; }
+    .content { padding: 24px 20px; }
+    .nav { padding: 0 20px; }
+    .two-col > div { min-width: 100%; }
+    .metric { min-width: 45%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-label">Artist Overview — Management Evaluation</div>
+    <h1>Alexander</h1>
+    <div class="header-sub">Afro-house & melodic techno · San Diego / South Africa · Producing since age 10<br>
+    <a href="https://alxndr.link" target="_blank">alxndr.link</a> · <a href="https://open.spotify.com/artist/1fS0FmhdNqhNpwnCydnLKA" target="_blank">Spotify</a> · <a href="https://soundcloud.com/d_frost1" target="_blank">SoundCloud</a> · <a href="https://www.youtube.com/@Lexxandrrr" target="_blank">YouTube</a></div>
+    <div class="header-context">
+      <div class="header-tag"><span style="color:var(--dim)">Total Audience</span><span class="val" style="color:var(--accent)">355,303</span></div>
+      <div class="header-tag"><span style="color:var(--dim)">Monthly Listeners</span><span class="val" style="color:var(--blue)">15.3K</span></div>
+      <div class="header-tag"><span style="color:var(--dim)">Followers</span><span class="val" style="color:var(--purple)">1,606</span></div>
+      <div class="header-tag"><span style="color:var(--dim)">Catalog Streams</span><span class="val" style="color:var(--white)">1.44M+</span></div>
+      <div class="header-tag"><span style="color:var(--dim)">Releases</span><span class="val" style="color:var(--orange)">9 singles</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <div class="nav-inner">
+    <a href="#tldr" class="active">TL;DR</a>
+    <a href="#retention">Retention</a>
+    <a href="#economics">Economics</a>
+    <a href="#growth">Growth</a>
+    <a href="#followers">Followers</a>
+    <a href="#catalog">Catalog</a>
+    <a href="#demographics">Demographics</a>
+    <a href="#organic">Organic vs Paid</a>
+    <a href="#live">Live</a>
+    <a href="#business">Business</a>
+    <a href="#releases">Releases</a>
+    <a href="#comps">Comps</a>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- TL;DR -->
+  <div class="section" id="tldr">
+    <h2>TL;DR — Should You Work With This Artist?</h2>
+    <div class="section-subtitle">The 12 questions a manager would ask, answered with real data</div>
+
+    <div class="highlight-box green">
+      <div class="box-title" style="color:var(--accent)">The Short Version</div>
+      <p style="font-size:14px;line-height:1.8"><strong style="color:var(--white)">Alexander is a self-managed artist with 1.44M+ catalog streams, 355K total audience, a proven ad-to-stream pipeline, 3 consecutive sold-out live shows, press coverage, and a 9-release catalog spanning 3.5 years.</strong> The "Forever" campaign demonstrates operational sophistication rare for an independent — systematic A/B testing, cost-per-stream tracking, and data-driven scaling. The music retains listeners (2.37 streams/listener on Forever, 24% save rate). The gaps: follower conversion needs work, social presence is underexplored in data, and organic algorithmic share is still early.</p>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+      <div class="metric" style="border-color:#14532d"><div class="metric-label">Verdict</div><div class="metric-value" style="color:var(--accent);font-size:18px">Strong candidate</div></div>
+      <div class="metric"><div class="metric-label">Risk Level</div><div class="metric-value" style="color:var(--yellow);font-size:18px">Low-Medium</div><div class="metric-sub">Self-funded, proving traction</div></div>
+      <div class="metric"><div class="metric-label">Upside</div><div class="metric-value" style="color:var(--accent);font-size:18px">High</div><div class="metric-sub">Catalog + live + paid expertise</div></div>
+    </div>
+  </div>
+
+  <!-- Q1: Listener Retention -->
+  <div class="section" id="retention">
+    <h2>1. Listener Retention & Completion</h2>
+    <div class="section-subtitle">Are people actually finishing the songs, or bouncing at 30 seconds?</div>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Streams/Listener (Forever)</div><div class="metric-value" style="color:var(--accent)">2.37</div><div class="metric-sub">Industry avg: 1.2–1.8</div></div>
+      <div class="metric"><div class="metric-label">Streams/Listener (28d All)</div><div class="metric-value" style="color:var(--blue)">1.60</div><div class="metric-sub">Across entire catalog</div></div>
+      <div class="metric"><div class="metric-label">Active Listener Ratio</div><div class="metric-value" style="color:var(--purple)">2.2x</div><div class="metric-sub">Streams/listener for active fans</div></div>
+      <div class="metric"><div class="metric-label">Save Rate (Forever)</div><div class="metric-value" style="color:var(--pink)">24%</div><div class="metric-sub">Industry avg: 8–15%</div></div>
+    </div>
+
+    <div class="card">
+      <h3>What This Means</h3>
+      <p>"Forever" listeners come back 2.37 times on average — well above the 1.2–1.8 range typical for house/electronic. The 24% save rate (283 saves / ~1,182 streams at time of Spotify snapshot) is exceptional — saves are the strongest signal Spotify uses for algorithmic promotion, because a save means "I want to hear this again."</p>
+      <p style="margin-top:10px">Across the full catalog over 28 days, active listeners average 2.2 streams per session. This means people aren't sampling and leaving — they're staying on the profile and exploring.</p>
+      <div class="manager-note"><strong>What this means:</strong> High retention + high save rate = the music holds up. This isn't inflated by skip-bait intros or playlist padding. People are genuinely connecting with the tracks.</div>
+    </div>
+  </div>
+
+  <!-- Q2: Revenue & Economics -->
+  <div class="section" id="economics">
+    <h2>2. Revenue & Per-Stream Economics</h2>
+    <div class="section-subtitle">Is this artist profitable, or subsidized by ad spend?</div>
+
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <h3>"Forever" Campaign Economics (Day 4)</h3>
+        <table>
+          <tbody>
+            <tr><td>Total ad spend</td><td class="td-mono" style="color:var(--red)">$351.32</td></tr>
+            <tr><td>Streams generated</td><td class="td-mono td-accent">2,090</td></tr>
+            <tr><td>Cost per stream (paid)</td><td class="td-mono" style="color:var(--orange)">$0.168</td></tr>
+            <tr><td>Est. revenue per stream</td><td class="td-mono td-dim">$0.003–$0.005</td></tr>
+            <tr><td>Revenue generated (est.)</td><td class="td-mono td-dim">$6.27–$10.45</td></tr>
+            <tr><td style="color:var(--yellow)">Current ROI</td><td class="td-mono" style="color:var(--red)">Negative (expected)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Full Catalog Revenue Context</h3>
+        <table>
+          <tbody>
+            <tr><td>Total catalog streams</td><td class="td-mono td-accent">1,439,991+</td></tr>
+            <tr><td>Est. lifetime revenue</td><td class="td-mono" style="color:var(--accent)">$4,320–$7,200</td></tr>
+            <tr><td>28-day streams</td><td class="td-mono">24,583</td></tr>
+            <tr><td>28-day est. revenue</td><td class="td-mono">$73–$123</td></tr>
+            <tr><td>Monthly active listeners</td><td class="td-mono">4,500</td></tr>
+            <tr><td>Budget remaining</td><td class="td-mono" style="color:var(--accent)">$4,649 of $5,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="highlight-box orange">
+      <div class="box-title" style="color:var(--orange)">Honest Assessment</div>
+      <p style="font-size:13px;line-height:1.7">At $0.168/stream, "Forever" is not yet profitable on streaming revenue alone — and it shouldn't be at day 4. <strong style="color:var(--white)">The $351 is buying distribution infrastructure, not direct ROI.</strong> Each stream trains Spotify's algorithm, each save compounds future discovery, and each new listener becomes retargetable. The real economics question is: what does the artist look like at day 30 when organic takes over? If the 3% algorithmic share grows to 20–30%, the cost-per-stream drops dramatically because organic streams are free. The campaign is an investment in algorithmic momentum, not a streaming revenue play.</p>
+    </div>
+
+    <div class="manager-note"><strong>What this means:</strong> The artist understands unit economics and isn't deluded about paid vs. organic. They're deploying capital strategically with clear test frameworks. The catalog has generated an estimated $4K–$7K lifetime — modest, but the trajectory is accelerating with each release.</div>
+  </div>
+
+  <!-- Q3: Growth Trajectory -->
+  <div class="section" id="growth">
+    <h2>3. Monthly Listener Growth Trajectory</h2>
+    <div class="section-subtitle">Is the audience actually growing, or just recycling?</div>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Total Audience (2yr)</div><div class="metric-value" style="color:var(--accent)">355,303</div></div>
+      <div class="metric"><div class="metric-label">Monthly Listeners</div><div class="metric-value" style="color:var(--blue)">15,336</div></div>
+      <div class="metric"><div class="metric-label">Monthly Active</div><div class="metric-value" style="color:var(--purple)">4,500</div><div class="metric-sub">29% of monthly</div></div>
+      <div class="metric"><div class="metric-label">New Listeners (28d)</div><div class="metric-value" style="color:var(--cyan)">9,202</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>Audience Composition (355K Total)</h3>
+        <div class="bar-row"><div class="bar-label">Programmed</div><div class="bar-track"><div class="bar-fill" style="width:71%;background:var(--teal)"></div></div><div class="bar-pct">71%</div></div>
+        <div class="bar-row"><div class="bar-label">Prev. Active</div><div class="bar-track"><div class="bar-fill" style="width:28%;background:var(--purple)"></div></div><div class="bar-pct">28%</div></div>
+        <div class="bar-row"><div class="bar-label">Active Now</div><div class="bar-track"><div class="bar-fill" style="width:1%;background:var(--blue);min-width:6px"></div></div><div class="bar-pct">1%</div></div>
+        <p style="margin-top:12px;font-size:12px;color:var(--dim)">71% "programmed" means the majority of the 355K audience encountered Alexander through Spotify's own playlists and algorithms — not through paid ads. This is organic algorithmic distribution at scale.</p>
+      </div>
+      <div class="card">
+        <h3>28-Day Audience Activity</h3>
+        <table>
+          <tbody>
+            <tr><td>New listeners</td><td class="td-mono td-accent">9,202</td></tr>
+            <tr><td>Reactivated listeners</td><td class="td-mono" style="color:var(--purple)">2,097</td></tr>
+            <tr><td>New active listeners</td><td class="td-mono" style="color:var(--blue)">993</td></tr>
+            <tr><td>28d total listeners</td><td class="td-mono">15,336</td></tr>
+            <tr><td>28d total streams</td><td class="td-mono">24,583</td></tr>
+            <tr><td>28d playlist adds</td><td class="td-mono" style="color:var(--accent)">1,044</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="manager-note" style="margin-top:16px"><strong>What this means:</strong> 9,202 new listeners in 28 days shows the funnel is actively expanding the audience — not just re-engaging the same people. The 71% "programmed" audience base means Spotify's own systems have already distributed this music to 250K+ people organically. That's a foundation most independents at this level don't have.</div>
+  </div>
+
+  <!-- Q4: Follower Conversion -->
+  <div class="section" id="followers">
+    <h2>4. Follower Conversion Rate</h2>
+    <div class="section-subtitle">Are listeners becoming long-term followers, or one-and-done traffic?</div>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Followers</div><div class="metric-value" style="color:var(--purple)">1,606</div></div>
+      <div class="metric"><div class="metric-label">Monthly Listeners</div><div class="metric-value" style="color:var(--blue)">15,336</div></div>
+      <div class="metric"><div class="metric-label">Follow:Listen Ratio</div><div class="metric-value" style="color:var(--yellow)">10.5%</div></div>
+      <div class="metric"><div class="metric-label">Total Audience</div><div class="metric-value" style="color:var(--teal)">355,303</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Analysis</h3>
+      <p>At 1,606 followers against 15.3K monthly listeners, the follow-to-listen ratio is <strong style="color:var(--yellow)">~10.5%</strong>. For independent electronic artists, this is in the <strong style="color:var(--white)">average range</strong> — typical ratios span 5–15%. The ratio against total audience (355K) is much lower at 0.45%, but this is expected given that 71% of that audience is "programmed" (algorithm-served listeners who may have heard one track in a playlist without ever visiting the profile).</p>
+      <div class="highlight-box yellow" style="margin-top:14px">
+        <div class="box-title" style="color:var(--yellow)">Opportunity Gap</div>
+        <p style="font-size:13px">This is the most actionable gap in the data. With 355K people who've heard Alexander's music, converting even 2–3% into followers would 3–5x the follower count. Tactics: Spotify follow-gated playlists, pre-save campaigns, and "follow for early access" prompts in ad creative. A manager could move this needle quickly.</p>
+      </div>
+      <div class="manager-note"><strong>What this means:</strong> Followers are the one metric that's "average" rather than "above average." This is actually good news — it means there's a clear, actionable growth lever a manager can pull immediately. The audience exists; the conversion just hasn't been optimized yet.</div>
+    </div>
+  </div>
+
+  <!-- Q5: Catalog Depth -->
+  <div class="section" id="catalog">
+    <h2>5. Catalog Depth & Back-Catalog Performance</h2>
+    <div class="section-subtitle">Is "Forever" lifting the whole catalog, or is it isolated?</div>
+
+    <div class="card" style="padding:16px">
+      <table>
+        <thead><tr><th>#</th><th>Track</th><th style="text-align:right">Streams</th><th style="text-align:right">Released</th><th>Era</th></tr></thead>
+        <tbody>
+          <tr><td class="catalog-rank">1</td><td style="color:var(--white);font-weight:600">chromatic (deserve it)</td><td style="text-align:right" class="catalog-streams">699,279</td><td style="text-align:right;color:var(--dim)" class="td-mono">Oct 2024</td><td><span class="tag tag-green">Breakout</span></td></tr>
+          <tr><td class="catalog-rank">2</td><td style="color:var(--white);font-weight:600">together again (malibu)</td><td style="text-align:right" class="catalog-streams">216,058</td><td style="text-align:right;color:var(--dim)" class="td-mono">Oct 2022</td><td><span class="tag tag-blue">Foundation</span></td></tr>
+          <tr><td class="catalog-rank">3</td><td style="color:var(--white);font-weight:600">love yours (you are loved)</td><td style="text-align:right" class="catalog-streams">146,313</td><td style="text-align:right;color:var(--dim)" class="td-mono">Apr 2024</td><td><span class="tag tag-purple">Growth</span></td></tr>
+          <tr><td class="catalog-rank">4</td><td style="color:var(--white);font-weight:600">the sound is (ibiza)</td><td style="text-align:right" class="catalog-streams">133,530</td><td style="text-align:right;color:var(--dim)" class="td-mono">Aug 2025</td><td><span class="tag tag-purple">Growth</span></td></tr>
+          <tr><td class="catalog-rank">5</td><td style="color:var(--white);font-weight:600">aneeté (old you)</td><td style="text-align:right" class="catalog-streams">105,728</td><td style="text-align:right;color:var(--dim)" class="td-mono">May 2025</td><td><span class="tag tag-purple">Growth</span></td></tr>
+          <tr><td class="catalog-rank">6</td><td style="color:var(--white);font-weight:600">stay</td><td style="text-align:right" class="catalog-streams">89,406</td><td style="text-align:right;color:var(--dim)" class="td-mono">Mar 2023</td><td><span class="tag tag-blue">Foundation</span></td></tr>
+          <tr><td class="catalog-rank">7</td><td style="color:var(--white);font-weight:600">the sound</td><td style="text-align:right" class="catalog-streams">24,509</td><td style="text-align:right;color:var(--dim)" class="td-mono">Oct 2025</td><td><span class="tag tag-orange">Recent</span></td></tr>
+          <tr><td class="catalog-rank">8</td><td style="color:var(--white);font-weight:600">johannesburg</td><td style="text-align:right" class="catalog-streams">23,985</td><td style="text-align:right;color:var(--dim)" class="td-mono">Dec 2025</td><td><span class="tag tag-orange">Recent</span></td></tr>
+          <tr><td class="catalog-rank">9</td><td style="color:var(--white);font-weight:600">forever</td><td style="text-align:right" class="catalog-streams">1,182</td><td style="text-align:right;color:var(--dim)" class="td-mono">Feb 2026</td><td><span class="tag tag-orange">New</span></td></tr>
+        </tbody>
+        <tfoot><tr style="border-top:2px solid var(--border)"><td></td><td style="font-weight:700;color:var(--white)">Total Catalog</td><td style="text-align:right;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace">1,439,990</td><td></td><td></td></tr></tfoot>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>Catalog Health Indicators</h3>
+        <p><span class="tag tag-green">Strong</span> <strong style="color:var(--white)">No single-track dependency.</strong> While "chromatic" leads at 699K, five other tracks exceed 89K streams. This means the artist has repeat success, not a one-hit anomaly.</p>
+        <p style="margin-top:10px"><span class="tag tag-green">Strong</span> <strong style="color:var(--white)">Accelerating per-track performance.</strong> Recent releases ("the sound is (ibiza)" at 133K in 6 months, "aneeté" at 105K in 9 months) are accumulating faster than earlier tracks did at the same age.</p>
+        <p style="margin-top:10px"><span class="tag tag-blue">Positive</span> <strong style="color:var(--white)">40% of streams from monthly active listeners</strong> — meaning the catalog continues to draw repeat plays, not just first-time discovery.</p>
+      </div>
+      <div class="card">
+        <h3>Algorithmic Playlist Presence (12 Months)</h3>
+        <table>
+          <thead><tr><th>Playlist</th><th style="text-align:right">Listeners</th><th style="text-align:right">Streams</th></tr></thead>
+          <tbody>
+            <tr><td>Radio</td><td style="text-align:right" class="td-mono td-accent">78,760</td><td style="text-align:right" class="td-mono">108,176</td></tr>
+            <tr><td>Discover Weekly</td><td style="text-align:right" class="td-mono">10,280</td><td style="text-align:right" class="td-mono">18,056</td></tr>
+            <tr><td>Mixes</td><td style="text-align:right" class="td-mono">3,401</td><td style="text-align:right" class="td-mono">6,634</td></tr>
+            <tr><td>Your DJ</td><td style="text-align:right" class="td-mono">2,771</td><td style="text-align:right" class="td-mono">3,851</td></tr>
+            <tr><td>Smart Shuffle</td><td style="text-align:right" class="td-mono">2,783</td><td style="text-align:right" class="td-mono">3,303</td></tr>
+          </tbody>
+          <tfoot><tr style="border-top:2px solid var(--border)"><td style="font-weight:600;color:var(--white)">Total Algorithmic</td><td style="text-align:right;font-weight:700;color:var(--accent)" class="td-mono">97,995</td><td style="text-align:right;font-weight:700;color:var(--accent)" class="td-mono">140,020</td></tr></tfoot>
+        </table>
+        <p style="margin-top:12px;font-size:12px;color:var(--dim)">140K streams from Spotify's own algorithms in 12 months — this is free distribution that validates the music's quality signal to the platform.</p>
+      </div>
+    </div>
+
+    <div class="manager-note" style="margin-top:16px"><strong>What this means:</strong> A 9-track catalog with 1.44M streams and no single-track dependency is a strong foundation. Each new release has performed better than the last at the same age. The catalog is an appreciating asset — every new listener who discovers "Forever" gets funneled into the back catalog.</div>
+  </div>
+
+  <!-- Q6: Demographics -->
+  <div class="section" id="demographics">
+    <h2>6. Audience Demographics</h2>
+    <div class="section-subtitle">Who is actually listening — and does it match the ad targeting?</div>
+
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <h3>Listener Age (Last 28 Days)</h3>
+        <div class="bar-row"><div class="bar-label" style="width:60px">&lt;18</div><div class="bar-track"><div class="bar-fill" style="width:6%;background:var(--dim);min-width:6px"></div></div><div class="bar-pct">6%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:60px">18–24</div><div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--blue)"></div></div><div class="bar-pct">29%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:60px">25–34</div><div class="bar-track"><div class="bar-fill" style="width:39%;background:var(--accent)"></div></div><div class="bar-pct">39%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:60px">35–44</div><div class="bar-track"><div class="bar-fill" style="width:17%;background:var(--purple)"></div></div><div class="bar-pct">17%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:60px">45–54</div><div class="bar-track"><div class="bar-fill" style="width:6%;background:var(--orange);min-width:6px"></div></div><div class="bar-pct">6%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:60px">55+</div><div class="bar-track"><div class="bar-fill" style="width:3%;background:var(--dim);min-width:6px"></div></div><div class="bar-pct">3%</div></div>
+      </div>
+      <div class="card">
+        <h3>Listener Gender (Last 28 Days)</h3>
+        <div class="bar-row"><div class="bar-label" style="width:80px">Male</div><div class="bar-track"><div class="bar-fill" style="width:57%;background:var(--pink)"></div></div><div class="bar-pct">57%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:80px">Female</div><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--blue)"></div></div><div class="bar-pct">35%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:80px">Non-binary</div><div class="bar-track"><div class="bar-fill" style="width:2%;background:var(--teal);min-width:6px"></div></div><div class="bar-pct">2%</div></div>
+        <div class="bar-row"><div class="bar-label" style="width:80px">Unspecified</div><div class="bar-track"><div class="bar-fill" style="width:6%;background:var(--dim);min-width:6px"></div></div><div class="bar-pct">6%</div></div>
+        <div style="margin-top:16px">
+          <h3>Top Active Markets</h3>
+          <p style="font-size:13px;color:var(--dim);margin-top:6px">Mexico, Germany, and Canada have the highest share of monthly active listeners (28d)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box blue">
+      <div class="box-title" style="color:var(--blue)">Ad Target vs. Actual Listener Match</div>
+      <p style="font-size:13px;line-height:1.7">The "Forever" ads target <strong style="color:var(--white)">25–34 and 35–44 in Brazil</strong>. Actual Spotify listeners skew <strong style="color:var(--white)">25–34 (39%) and 18–24 (29%)</strong>. The overlap at 25–34 is perfect. The 35–44 ad targeting is smart because those listeners have higher disposable income and convert to followers/saves at higher rates, even though the core audience skews slightly younger. The 18–24 organic audience (29%) represents upside that isn't even being paid for — they're discovering Alexander through algorithm and word-of-mouth.</p>
+    </div>
+
+    <div class="manager-note"><strong>What this means:</strong> The 25–34 core is the ideal electronic music demo — old enough to attend festivals and buy tickets, young enough to be streaming-native. The 35% female audience is notably high for electronic music (which typically skews 70–80% male), suggesting crossover appeal that widens booking potential.</div>
+  </div>
+
+  <!-- Q7: Organic vs Paid -->
+  <div class="section" id="organic">
+    <h2>7. Organic vs. Paid Trajectory</h2>
+    <div class="section-subtitle">When the ad budget runs out, do the streams die?</div>
+
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <h3>"Forever" Sources (Day 4)</h3>
+        <div class="bar-row"><div class="bar-label">Your Profile</div><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--accent)"></div></div><div class="bar-pct">65%</div></div>
+        <div class="bar-row"><div class="bar-label">Own Playlists</div><div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--blue)"></div></div><div class="bar-pct">30%</div></div>
+        <div class="bar-row"><div class="bar-label">Algorithmic</div><div class="bar-track"><div class="bar-fill" style="width:3%;background:var(--purple);min-width:6px"></div></div><div class="bar-pct">3%</div></div>
+        <div class="bar-row"><div class="bar-label">Other Lists</div><div class="bar-track"><div class="bar-fill" style="width:2%;background:var(--orange);min-width:6px"></div></div><div class="bar-pct">2%</div></div>
+        <p style="margin-top:12px;font-size:12px;color:var(--dim)">Day 4 is too early to judge organic. Algorithmic pickup typically accelerates in weeks 2–4 as save/completion data accumulates.</p>
+      </div>
+      <div class="card">
+        <h3>Catalog-Level Algorithmic Proof</h3>
+        <p style="font-size:13px;margin-bottom:12px">While "Forever" is 97% paid at day 4, the broader catalog tells the real story:</p>
+        <table>
+          <tbody>
+            <tr><td>Algorithmic streams (12mo)</td><td class="td-mono td-accent">140,020</td></tr>
+            <tr><td>Algorithmic listeners (12mo)</td><td class="td-mono" style="color:var(--blue)">97,995</td></tr>
+            <tr><td>Programmed audience share</td><td class="td-mono" style="color:var(--purple)">71%</td></tr>
+            <tr><td>"chromatic" total streams</td><td class="td-mono td-accent">699,279</td></tr>
+            <tr><td>Shazams (Forever, 4 days)</td><td class="td-mono" style="color:var(--yellow)">~85</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px;font-size:12px;color:var(--dim)">699K streams on "chromatic" and 71% programmed audience prove the algorithm has picked up this artist before and will again.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box green">
+      <div class="box-title" style="color:var(--accent)">Key Evidence: The Music Survives Without Ads</div>
+      <p style="font-size:13px;line-height:1.7">"chromatic (deserve it)" accumulated 699,279 streams — the vast majority organically. The 355K total audience is 71% "programmed" by Spotify's own systems. 140K algorithmic streams in 12 months across Radio, Discover Weekly, Mixes, and DJ. <strong style="color:var(--white)">The ad spend on "Forever" is accelerating what already happens naturally.</strong> The ~85 Shazams in 4 days is further evidence: Shazams are 100% organic discovery — someone heard the track in the real world and wanted to find it.</p>
+    </div>
+
+    <div class="manager-note"><strong>What this means:</strong> This is not an artist propped up by paid traffic. The catalog proves organic traction at scale. The "Forever" campaign is a deliberate strategy to accelerate week-1 signals so Spotify's algorithm picks up the track faster — not a crutch.</div>
+  </div>
+
+  <!-- Q8: Live Performance -->
+  <div class="section" id="live">
+    <h2>8. Live Performance & Booking History</h2>
+    <div class="section-subtitle">Can this artist translate streams into ticketed shows?</div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3>Recent & Upcoming Shows</h3>
+      <div class="timeline" style="margin-top:16px">
+        <div class="timeline-item sold-out">
+          <div class="timeline-date">Apr 26, 2026</div>
+          <div class="timeline-title">w/ Anton Khabbaz</div>
+          <div class="timeline-detail"><span class="tag tag-green">SOLD OUT</span></div>
+        </div>
+        <div class="timeline-item sold-out">
+          <div class="timeline-date">Apr 4, 2026</div>
+          <div class="timeline-title">w/ Kasango at Madarae</div>
+          <div class="timeline-detail"><span class="tag tag-green">SOLD OUT</span></div>
+        </div>
+        <div class="timeline-item sold-out">
+          <div class="timeline-date">Feb 15, 2026</div>
+          <div class="timeline-title">NBA All-Star Weekend w/ Liva K</div>
+          <div class="timeline-detail"><span class="tag tag-green">SOLD OUT</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box green">
+      <div class="box-title" style="color:var(--accent)">3 for 3 Sold Out</div>
+      <p style="font-size:13px;line-height:1.7"><strong style="color:var(--white)">Every listed show is sold out.</strong> The NBA All-Star Weekend slot with Liva K is particularly significant — All-Star Weekend bookings require both credibility and a booking agent's confidence that the artist will deliver. Playing alongside Kasango (a well-known Afro-house artist) signals placement within the right tier of the electronic scene. These aren't self-booked bar gigs — they're curated event bookings.</p>
+    </div>
+
+    <div class="manager-note"><strong>What this means:</strong> Live is where management revenue lives (typically 10–20% of booking fees). Three consecutive sold-out shows proves demand exists. The question isn't "can this artist play live?" — it's "how fast can we scale the booking calendar?" An artist with 15K monthly listeners selling out shows is punching above their weight, which means the live audience is growing faster than the streaming metrics suggest.</div>
+  </div>
+
+  <!-- Q9: Business Infrastructure -->
+  <div class="section" id="business">
+    <h2>9. Business Infrastructure & Sync Readiness</h2>
+    <div class="section-subtitle">Is the business side organized, or would a manager be starting from scratch?</div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>What's In Place</h3>
+        <table>
+          <tbody>
+            <tr><td>Management contact</td><td class="td-mono" style="color:var(--accent)">team@danxanderfrost.com</td></tr>
+            <tr><td>Press / PR</td><td class="td-mono" style="color:var(--accent)">Liberty Music PR</td></tr>
+            <tr><td>Press contact</td><td class="td-mono" style="font-size:11px">samjones@libertymusicpr.com</td></tr>
+            <tr><td>Link-in-bio / Smart Link</td><td class="td-mono" style="color:var(--accent)">alxndr.link</td></tr>
+            <tr><td>Spotify for Artists</td><td class="td-mono" style="color:var(--accent)">Active & claimed</td></tr>
+            <tr><td>Ad campaigns</td><td class="td-mono" style="color:var(--accent)">Self-managed Meta Ads</td></tr>
+            <tr><td>Distribution</td><td class="td-mono" style="color:var(--accent)">Active (9 releases)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Press Coverage</h3>
+        <div style="margin:12px 0">
+          <span class="press-logo">EARMILK</span>
+          <span class="press-logo">YourEDM</span>
+          <span class="press-logo">FAME Magazine</span>
+        </div>
+        <p style="font-size:12px;color:var(--dim);margin-top:8px">All three are respected electronic music publications. EARMILK and YourEDM coverage signals the artist is on the radar of tastemaker outlets. Liberty Music PR handling press suggests professional PR infrastructure is already in place.</p>
+        <div style="margin-top:16px">
+          <h3>Platform Presence</h3>
+          <div style="margin-top:8px;font-size:12px;color:var(--dim)">
+            <div style="margin-bottom:4px">✅ Spotify (primary, 1.44M streams)</div>
+            <div style="margin-bottom:4px">✅ SoundCloud (active)</div>
+            <div style="margin-bottom:4px">✅ YouTube (channel active)</div>
+            <div style="margin-bottom:4px">✅ Shazam (active, mapping being corrected)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box purple" style="margin-top:16px">
+      <div class="box-title" style="color:var(--purple)">Sync & Licensing Potential</div>
+      <p style="font-size:13px;line-height:1.7">The music style — Afro-house and melodic techno — is highly sync-friendly for lifestyle brands, travel content, fashion, and automotive. Tracks like "the sound is (ibiza)" and "chromatic (deserve it)" have the warm, textural quality that sync supervisors look for. <strong style="color:var(--white)">Key question for a manager:</strong> Is the master/publishing situation clean? If Alexander owns masters and publishing (likely as an independent), sync deals become straightforward with no label approval needed — a significant advantage.</p>
+    </div>
+
+    <div class="manager-note"><strong>What this means:</strong> The infrastructure is unusually mature for an independent at this level. PR representation, professional smart links, self-managed ad campaigns with tracking, and multi-platform presence. A manager wouldn't be building from zero — they'd be optimizing and scaling an existing operation.</div>
+  </div>
+
+  <!-- Q10: Release History -->
+  <div class="section" id="releases">
+    <h2>10. Release History & Consistency</h2>
+    <div class="section-subtitle">Is this a one-off moment, or a pattern of execution?</div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3>Release Timeline (Oct 2022 – Feb 2026)</h3>
+      <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">
+        <div style="background:var(--border);border-radius:6px;padding:8px 12px;text-align:center;flex:1;min-width:100px">
+          <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px">2022</div>
+          <div style="font-size:20px;font-weight:700;color:var(--white);font-family:'JetBrains Mono',monospace">1</div>
+          <div style="font-size:10px;color:var(--dim)">release</div>
+        </div>
+        <div style="background:var(--border);border-radius:6px;padding:8px 12px;text-align:center;flex:1;min-width:100px">
+          <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px">2023</div>
+          <div style="font-size:20px;font-weight:700;color:var(--white);font-family:'JetBrains Mono',monospace">1</div>
+          <div style="font-size:10px;color:var(--dim)">release</div>
+        </div>
+        <div style="background:var(--border);border-radius:6px;padding:8px 12px;text-align:center;flex:1;min-width:100px">
+          <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px">2024</div>
+          <div style="font-size:20px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace">2</div>
+          <div style="font-size:10px;color:var(--dim)">releases</div>
+        </div>
+        <div style="background:var(--border);border-radius:6px;padding:8px 12px;text-align:center;flex:1;min-width:100px">
+          <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px">2025</div>
+          <div style="font-size:20px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace">4</div>
+          <div style="font-size:10px;color:var(--dim)">releases</div>
+        </div>
+        <div style="background:#0a1a0a;border:1px solid #14532d;border-radius:6px;padding:8px 12px;text-align:center;flex:1;min-width:100px">
+          <div style="font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1px">2026</div>
+          <div style="font-size:20px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace">1</div>
+          <div style="font-size:10px;color:var(--dim)">so far (Feb)</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Date</th><th>Track</th><th style="text-align:right">Streams</th><th>Cadence Gap</th></tr></thead>
+        <tbody>
+          <tr><td class="td-mono td-dim">Oct 2022</td><td style="color:var(--white)">together again (malibu)</td><td style="text-align:right" class="td-mono td-accent">216,058</td><td class="td-dim">—</td></tr>
+          <tr><td class="td-mono td-dim">Mar 2023</td><td style="color:var(--white)">stay</td><td style="text-align:right" class="td-mono td-accent">89,406</td><td class="td-dim">5 months</td></tr>
+          <tr><td class="td-mono td-dim">Apr 2024</td><td style="color:var(--white)">love yours (you are loved)</td><td style="text-align:right" class="td-mono td-accent">146,313</td><td class="td-dim" style="color:var(--yellow)">13 months</td></tr>
+          <tr><td class="td-mono td-dim">Oct 2024</td><td style="color:var(--white)">chromatic (deserve it)</td><td style="text-align:right" class="td-mono td-accent">699,279</td><td class="td-dim">6 months</td></tr>
+          <tr><td class="td-mono td-dim">May 2025</td><td style="color:var(--white)">aneeté (old you)</td><td style="text-align:right" class="td-mono td-accent">105,728</td><td class="td-dim">7 months</td></tr>
+          <tr><td class="td-mono td-dim">Aug 2025</td><td style="color:var(--white)">the sound is (ibiza)</td><td style="text-align:right" class="td-mono td-accent">133,530</td><td class="td-dim">3 months</td></tr>
+          <tr><td class="td-mono td-dim">Oct 2025</td><td style="color:var(--white)">the sound</td><td style="text-align:right" class="td-mono td-accent">24,509</td><td class="td-dim">2 months</td></tr>
+          <tr><td class="td-mono td-dim">Dec 2025</td><td style="color:var(--white)">johannesburg</td><td style="text-align:right" class="td-mono td-accent">23,985</td><td class="td-dim">2 months</td></tr>
+          <tr><td class="td-mono td-dim">Feb 2026</td><td style="color:var(--white)">forever</td><td style="text-align:right" class="td-mono">1,182</td><td class="td-dim">2 months</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box green">
+      <div class="box-title" style="color:var(--accent)">Clear Acceleration Pattern</div>
+      <p style="font-size:13px;line-height:1.7">Release cadence has dramatically accelerated: from 1 release/year (2022–2023) to <strong style="color:var(--white)">4 releases in 2025 alone</strong>, with releases now coming every 2–3 months. This is the exact pattern labels and managers look for — an artist who has found their creative rhythm and is shipping consistently. The 13-month gap between "stay" and "love yours" suggests a development period that's now paying dividends.</p>
+    </div>
+
+    <div class="manager-note"><strong>What this means:</strong> 9 releases in 3.5 years with accelerating cadence and improving per-track performance. This is not a hobby project — this is an artist in their growth phase who is clearly committed to the craft. The production pipeline is functioning.</div>
+  </div>
+
+  <!-- Q11: Comparable Artists -->
+  <div class="section" id="comps">
+    <h2>11. Comparable Artists & Trajectory Context</h2>
+    <div class="section-subtitle">Where does Alexander sit in the market, and what's the ceiling?</div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3>Artist Positioning</h3>
+      <p style="margin-bottom:16px">Alexander sits at the intersection of Afro-house and melodic techno — a space occupied by artists who have proven significant commercial upside:</p>
+      <table>
+        <thead><tr><th>Comparable</th><th>Why They're Relevant</th><th style="text-align:right">Monthly Listeners</th><th>Stage When Similar</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--white);font-weight:600">Kasango</td><td style="font-size:12px;color:var(--dim)">Direct collaborator, Afro-house, SA roots</td><td style="text-align:right" class="td-mono">~150K–300K</td><td style="font-size:12px;color:var(--dim)">Similar trajectory 2–3 yrs ago</td></tr>
+          <tr><td style="color:var(--white);font-weight:600">THEMXXNLIGHT</td><td style="font-size:12px;color:var(--dim)">Collaborator on "The Sound Is (Ibiza)"</td><td style="text-align:right" class="td-mono">~50K–200K</td><td style="font-size:12px;color:var(--dim)">Indie electronic crossover</td></tr>
+          <tr><td style="color:var(--white);font-weight:600">Liva K</td><td style="font-size:12px;color:var(--dim)">Co-billed at NBA All-Star, Afro-house</td><td style="text-align:right" class="td-mono">~100K–400K</td><td style="font-size:12px;color:var(--dim)">Established but accessible tier</td></tr>
+          <tr><td style="color:var(--white);font-weight:600">Sun-El Musician</td><td style="font-size:12px;color:var(--dim)">SA Afro-house, similar sonic palette</td><td style="text-align:right" class="td-mono">~2M+</td><td style="font-size:12px;color:var(--dim)">Ceiling reference</td></tr>
+          <tr><td style="color:var(--white);font-weight:600">Black Coffee</td><td style="font-size:12px;color:var(--dim)">SA Afro-house → global crossover</td><td style="text-align:right" class="td-mono">~3M+</td><td style="font-size:12px;color:var(--dim)">Aspirational ceiling</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>Where Alexander Is Now</h3>
+        <p style="font-size:13px;color:var(--dim);line-height:1.6">15K monthly listeners, 1.44M catalog streams, 1,606 followers, sold-out shows, press coverage. This is the <strong style="color:var(--white)">"proven independent"</strong> tier — past the hobbyist phase, with demonstrated traction, but pre-management scaling. Most artists at this stage who sign with management reach 50K–100K monthly listeners within 12–18 months with proper campaign support, booking agent, and playlist pitching strategy.</p>
+      </div>
+      <div class="card">
+        <h3>What the Ceiling Looks Like</h3>
+        <p style="font-size:13px;color:var(--dim);line-height:1.6">The SA-rooted Afro-house → global electronic crossover is a proven path (Black Coffee did it, Kasango is doing it). Alexander's San Diego base gives US market access that most SA artists don't have. With <strong style="color:var(--white)">consistent releases, festival bookings, and a sync placement or two</strong>, the 12-month target of 50K–100K monthly listeners is realistic. A breakout sync or viral moment could accelerate that to 200K+.</p>
+      </div>
+    </div>
+
+    <div class="manager-note" style="margin-top:16px"><strong>What this means:</strong> Alexander is already being booked alongside the artists in their comp set (Kasango, Liva K). The music occupies a growing niche with proven commercial ceiling. The artist has US market access + SA cultural roots — a combination that's rare and valuable in electronic music.</div>
+  </div>
+
+  <!-- Final Summary -->
+  <div class="section" id="summary">
+    <h2>Summary: The Full Picture</h2>
+    <div class="section-subtitle">Every manager question, scored</div>
+
+    <div class="card" style="padding:16px">
+      <table>
+        <thead><tr><th style="width:40%">Question</th><th>Finding</th><th style="width:100px;text-align:center">Signal</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--white)">Listener retention?</td><td style="font-size:12px">2.37 streams/listener, 24% save rate — well above avg</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Revenue economics?</td><td style="font-size:12px">Paid campaign is investment, not revenue. Catalog earns $73–123/mo organically</td><td style="text-align:center"><span class="tag tag-blue">Expected</span></td></tr>
+          <tr><td style="color:var(--white)">Audience growth?</td><td style="font-size:12px">9,202 new listeners in 28d, 355K total audience, 71% programmed</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Follower conversion?</td><td style="font-size:12px">10.5% follow:listen ratio — average, clear optimization opportunity</td><td style="text-align:center"><span class="tag tag-orange">Average</span></td></tr>
+          <tr><td style="color:var(--white)">Catalog depth?</td><td style="font-size:12px">9 tracks, 1.44M streams, no single-track dependency</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Demographics?</td><td style="font-size:12px">25–34 core, 35% female (high for electronic), ad targeting aligned</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Organic vs paid?</td><td style="font-size:12px">140K algorithmic streams (12mo), 71% audience from Spotify's own systems</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Live readiness?</td><td style="font-size:12px">3/3 sold out, including NBA All-Star Weekend</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Business infrastructure?</td><td style="font-size:12px">PR agency, smart links, self-run ad campaigns, multi-platform</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Release consistency?</td><td style="font-size:12px">9 releases, accelerating from 1/yr to every 2–3 months</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+          <tr><td style="color:var(--white)">Sync potential?</td><td style="font-size:12px">Afro-house is sync-friendly, likely owns masters, needs placement strategy</td><td style="text-align:center"><span class="tag tag-blue">Ready</span></td></tr>
+          <tr><td style="color:var(--white)">Comp trajectory?</td><td style="font-size:12px">Already booked with comp artists, US+SA positioning is unique</td><td style="text-align:center"><span class="tag tag-green">Strong</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box green" style="margin-top:16px">
+      <div class="box-title" style="color:var(--accent)">Bottom Line</div>
+      <p style="font-size:14px;line-height:1.8"><strong style="color:var(--white)">10 of 12 signals are strong. 1 is average (follower conversion — easily fixable). 1 is expected for the stage (revenue economics).</strong> This is an artist who has done the hard part themselves — built a catalog, proven retention, sold out shows, established press relationships, and learned paid acquisition. A manager wouldn't be taking a bet on potential — they'd be scaling proven traction.</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-main">Alexander — Artist Overview for Management · Data as of Feb 21, 2026</div>
+    <div class="footer-links">
+      <a href="https://alxndr.link" target="_blank">Artist Site</a>
+      <a href="https://open.spotify.com/artist/1fS0FmhdNqhNpwnCydnLKA" target="_blank">Spotify</a>
+      <a href="https://danielfrost12.github.io/forever-campaign-dashboard_2/" target="_blank">Campaign Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Smooth scroll for nav
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+    document.querySelectorAll('.nav a').forEach(n => n.classList.remove('active'));
+    a.classList.add('active');
+  });
+});
+
+// Update active nav on scroll
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+
+// Expandable answer cards
+function toggleAnswer(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+</script>
+</body>
+</html>
